@@ -1,3 +1,7 @@
+#include "arduino_secrets.h"
+#include "thingProperties.h"
+
+
 #include "heltec.h"
 #include "Arduino.h"
 #include "LoRaWan_APP.h"
@@ -79,7 +83,21 @@ void setup() {
                                0, true, 0, 0, LORA_IQ_INVERSION_ON, true );
 
 
+ // Defined in thingProperties.h
+  initProperties();
 
+  // Connect to Arduino IoT Cloud
+  ArduinoCloud.begin(ArduinoIoTPreferredConnection);
+  
+  /*
+     The following function allows you to obtain more information
+     related to the state of network and IoT Cloud connection and errors
+     the higher number the more granular information you’ll get.
+     The default is 0 (only errors).
+     Maximum is 4
+ */
+  setDebugMessageLevel(2);
+  ArduinoCloud.printDebugInfo();
 	
 
 
@@ -89,6 +107,8 @@ void setup() {
 
 void loop()
 {
+   ArduinoCloud.update();
+  // Your code here 
   if(lora_idle)
   {
     lora_idle = false;
@@ -113,4 +133,9 @@ void OnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
     delay(100);
     factory_display.clear();
     lora_idle = true;
+    
+}
+
+void onMessageReceivedChange()  {
+  // Add your code here to act upon MessageReceived change
 }
